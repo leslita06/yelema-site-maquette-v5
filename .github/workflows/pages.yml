@@ -1,0 +1,28 @@
+name: Maquette v5 Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.dep.outputs.page_url }}
+    steps:
+      - name: Recuperer les pages
+        run: |
+          curl -sSL -o site.zip https://github.com/leslita06/yelema-site-maquette-v5/releases/download/v5-261119/site.zip
+          mkdir site && cd site && unzip -q ../site.zip
+          test -f index.html
+          test -f missions.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: dep
+        uses: actions/deploy-pages@v4
